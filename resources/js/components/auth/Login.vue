@@ -11,8 +11,6 @@
                             <h2 class="text-center">LOGIN</h2>
                         </div>
                         <form>
-
-
                             <div class="form-group">
                                 <label for="email">E-mail</label>
                                 <input
@@ -20,43 +18,73 @@
                                     name="email"
                                     placeholder="Enter your e-mail"
                                     class="form-control"
-                                    @blur="$v.email.$touch()"
                                     v-model="email"
-                                    :class="[{ 'is-invalid': errorFor('email') },{'is-invalid' : $v.email.$error}]"/>
-                                <small v-if="!$v.email.required" class="form-text text-danger">Bu alan zorunludur...</small>
-                                <small v-if="!$v.email.email" class="form-text text-danger">Lütfen geçerli bir e-posta adresi
-                            giriniz...
-                        </small>
+                                    @blur="$v.email.$touch()"
+                                    :class="[
+                                        { 'is-invalid': errorFor('email') },
+                                        { 'is-invalid': $v.email.$error }
+                                    ]"
+                                />
+                                <div v-if="$v.email.$error" class="form-error">
+                                    <small
+                                        v-if="!$v.email.required"
+                                        class="form-text text-danger"
+                                        >Bu alan zorunludur...</small
+                                    >
+                                    <small
+                                        v-if="!$v.email.email"
+                                        class="form-text text-danger"
+                                        >Lütfen geçerli bir e-posta adresi
+                                        giriniz...
+                                    </small>
+                                </div>
                                 <v-errors
                                     :errors="errorFor('email')"
                                 ></v-errors>
                             </div>
 
-
-
                             <div class="form-group">
                                 <label for="password">Password</label>
                                 <input
+                                    v-model="password"
+                                    @blur="$v.password.$touch()"
                                     type="password"
                                     name="password"
                                     placeholder="Enter your password"
                                     class="form-control"
-                                    v-model="password"
-                                     @blur="$v.password.$touch()"
-                                    :class="[{ 'is-invalid': errorFor('password') },{'is-invalid' : $v.password.$error}]"/>
-                        <small v-if="!$v.password.required" class="form-text text-danger">Bu alan zorunludur...</small>
-                        <small v-if="!$v.password.minLength" class="form-text text-danger">Lütfen şifreniz en az {{
-                            $v.password.$params.minLength.min }} karakterden oluşmalıdır...
-                        </small>
-                        <small v-if="!$v.password.maxLength" class="form-text text-danger">Lütfen şifreniz en fazla {{
-                            $v.password.$params.maxLength.max }} karakterden oluşmalıdır...
-                        </small>
+                                    :class="[
+                                        { 'is-invalid': errorFor('password') },
+                                        { 'is-invalid': $v.password.$error }
+                                    ]"
+                                />
+                                <div
+                                    v-if="$v.password.$error"
+                                    class="form-error"
+                                >
+                                    <small
+                                        v-if="!$v.password.required"
+                                        class="form-text text-danger"
+                                        >Bu alan zorunludur...</small
+                                    >
+                                    <small
+                                        v-if="!$v.password.minLength"
+                                        class="form-text text-danger"
+                                        >Lütfen şifreniz en az
+                                        {{ $v.password.$params.minLength.min }}
+                                        karakterden oluşmalıdır...
+                                    </small>
+                                    <small
+                                        v-if="!$v.password.maxLength"
+                                        class="form-text text-danger"
+                                        >Lütfen şifreniz en fazla
+                                        {{ $v.password.$params.maxLength.max }}
+                                        karakterden oluşmalıdır...
+                                    </small>
+                                </div>
                                 <v-errors
                                     :errors="errorFor('password')"
                                 ></v-errors>
                             </div>
-
-
 
                             <button
                                 type="submit"
@@ -82,11 +110,10 @@
                             <div>
                                 Forgotten password?
                                 <router-link
-                                    :to="{ name: 'home' }"
+                                    :to="{ name: 'sendToken' }"
                                     class="font-weight-bold"
                                     >Reset password</router-link
                                 >
-                                
                             </div>
                         </form>
                     </div>
@@ -99,61 +126,74 @@
 <script>
 import validationErrors from "../../shared/mixins/validationErrors";
 import { logIn } from "../../shared/utils/auth";
- import {required, email, numeric, minLength, maxLength, sameAs, between} from "vuelidate/lib/validators"
+import {
+    required,
+    email,
+    numeric,
+    minLength,
+    maxLength,
+    sameAs,
+    between
+} from "vuelidate/lib/validators";
 export default {
-  mixins: [validationErrors],
-  data() {
-    return {
-      email: null,
-      password: null,
-      loading: false
-    };
-  },
-          validations: {
-            email: {
-                required,
-                email
-                },
-          
-            password: {
-                required,
-                minLength: minLength(6),
-                maxLength: maxLength(8)
-            },
-            
-            
-           
+    mixins: [validationErrors],
+    data() {
+        return {
+            email: null,
+            password: null,
+            loading: false
+        };
+    },
+    validations: {
+        email: {
+            required,
+            email
         },
-  methods: {
-    async login() {
-      this.loading = true;
-      this.errors = null;
 
-      try {
-        await axios.get("/sanctum/csrf-cookie");
-        await axios
-          .post("/login", {
-            email: this.email,
-            password: this.password
-          })
-          .then(response => {
-            if (response.status) {
-              logIn();
-              this.$store.dispatch("fetchAuthUser");
-              this.$store.dispatch("isAdmin");
-              this.$store.dispatch("initAppPermission");
+        password: {
+            required,
+            minLength: minLength(6),
+            maxLength: maxLength(8)
+        }
+    },
+    methods: {
+        async login() {
+            this.loading = true;
+            this.errors = null;
 
-              this.$router.push({
-                name: "home"
-              });
+            try {
+                await axios.get("/sanctum/csrf-cookie");
+                await axios
+                    .post("/login", {
+                        email: this.email,
+                        password: this.password
+                    })
+                    .then(response => {
+                        if (response.status) {
+                            logIn();
+                            this.$store.dispatch("fetchAuthUser");
+                            this.$store.dispatch("isAdmin");
+                            this.$store.dispatch("initAppPermission");
+
+                            this.$router.push({
+                                name: "home"
+                            });
+                            this.$toasted.success(
+                                "Welcome! You are logged in successfuly!!",
+                                {
+                                    theme: "bubble",
+                                    position: "top-center",
+                                    duration: 5000
+                                }
+                            );
+                        }
+                    });
+            } catch (error) {
+                this.errors = error.response && error.response.data.errors;
             }
-          });
-      } catch (error) {
-        this.errors = error.response && error.response.data.errors;
-      }
 
-      this.loading = false;
+            this.loading = false;
+        }
     }
-  }
 };
 </script>

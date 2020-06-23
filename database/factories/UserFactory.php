@@ -20,6 +20,8 @@ use Illuminate\Support\Str;
 $factory->define(User::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
+        'username' => $faker->sentence(1),
+        'avatar' => 'https://b.kisscc0.com/20180718/urw/kisscc0-ninja-computer-icons-samurai-youtube-avatar-ninja-5b4ed903c2dd20.4931332915318940197982.jpg',
         'email' => $faker->unique()->safeEmail,
         'email_verified_at' => now(),
         'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
@@ -27,5 +29,6 @@ $factory->define(User::class, function (Faker $faker) {
         'role_id' => random_int(1, 4),
         'activationCode' => Str::random(60),
         'socialType' => $faker->sentence(2),
+        'info' => $faker->sentence(3),
     ];
 });

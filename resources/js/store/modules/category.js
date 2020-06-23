@@ -17,9 +17,8 @@ const getters = {
 
 const actions = {
     initAppCategory({ commit }) {
-        axios.get("app/categories").then(response => {
-            let data = response.data;
-
+        axios.get("/app/categories").then(response => {
+            let data = response.data.category;
             commit("setCategories", data);
             localStorage.setItem("categories", JSON.stringify(data));
         });

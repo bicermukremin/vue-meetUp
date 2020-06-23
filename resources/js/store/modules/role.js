@@ -22,7 +22,7 @@ const getters = {
 
 const actions = {
     initAppRole({ commit }) {
-        axios.get("app/roles").then(response => {
+        axios.get("/app/roles").then(response => {
             let data = response.data;
 
             commit("setRoles", data);
@@ -30,7 +30,7 @@ const actions = {
         });
     },
     initAppPermission({ commit }) {
-        axios.get("app/permission").then(response => {
+        axios.get("/app/permission").then(response => {
             let data = response.data;
 
             commit("setUserPermission", data);
