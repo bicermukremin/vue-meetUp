@@ -14,12 +14,14 @@ import Toasted from "vue-toasted";
 import AppSocket from "./plugins/socket";
 import Vuetify from "./plugins/vuetify";
 
+
 Vue.component("pagination", require("laravel-vue-pagination"));
 Vue.config.productionTip = false;
 Vue.use(moment);
 Vue.component("AppHero", AppHero);
 Vue.component("AppDropdown", AppDropdown);
 Vue.component("AppSpinner", AppSpinner);
+
 
 Vue.use(AppSocket, { connection: "http://localhost:3001" });
 Vue.use(Vuetify);
