@@ -296,6 +296,8 @@ export default {
         if (201 == response.status) {
           logIn();
           this.$store.dispatch("fetchAuthUser");
+          this.$store.dispatch("isAdmin");
+          this.$store.dispatch("initAppPermission");
           this.$router.push({
             name: "home"
           });
